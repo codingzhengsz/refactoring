@@ -29,10 +29,14 @@ function calculateAmount(perf, play) {
     return thisAmount
 }
 
-function calculateCredits(volumeCredits, perf, play) {
-    volumeCredits += Math.max(perf.audience - 30, 0);
+function calculateCredits(invoice, plays) {
+    let volumeCredits = 0;
+    for (let perf of invoice.performances) {
+        const play = plays[perf.playID];
+        volumeCredits += Math.max(perf.audience - 30, 0);
+        if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    }
     // add extra credit for every ten comedy attendees
-    if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
     return volumeCredits;
 }
 
@@ -41,11 +45,9 @@ function generateResult(invoice, plays) {
     data.customer = invoice.customer;
     let performances = [];
     let totalAmount = 0;
-    let volumeCredits = 0;
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
         const thisAmount = calculateAmount(perf, play);
-        volumeCredits = calculateCredits(volumeCredits, perf, play);
         totalAmount += thisAmount;
         let performance = {};
         performance.name = play.name;
@@ -55,7 +57,7 @@ function generateResult(invoice, plays) {
     }
     data.performances = performances;
     data.totalAmount = totalAmount;
-    data.volumeCredits = volumeCredits;
+    data.volumeCredits = calculateCredits(invoice, plays);
     return data;
 }
 
