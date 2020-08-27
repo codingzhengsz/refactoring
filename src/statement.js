@@ -48,20 +48,25 @@ function calculateTotalAmount(receipt) {
     return totalAmount;
 }
 
+function generateReceipt(invoice, plays) {
+    let receipt = [];
+    for (let perf of invoice.performances) {
+        const play = plays[perf.playID];
+        let receiptItem = {};
+        receiptItem.name = play.name;
+        receiptItem.audience = perf.audience;
+        receiptItem.amount = calculateAmount(perf, play);
+        receipt.push(receiptItem);
+    }
+    return receipt;
+}
+
 function generateResult(invoice, plays) {
     let data = {};
     data.customer = invoice.customer;
-    let performances = [];
-    for (let perf of invoice.performances) {
-        const play = plays[perf.playID];
-        let performance = {};
-        performance.name = play.name;
-        performance.audience = perf.audience;
-        performance.amount = calculateAmount(perf, play);
-        performances.push(performance);
-    }
-    data.receipt = performances;
-    data.totalAmount = calculateTotalAmount(performances);
+    let receipt = generateReceipt(invoice, plays);
+    data.receipt = receipt;
+    data.totalAmount = calculateTotalAmount(receipt);
     data.volumeCredits = calculateCredits(invoice, plays);
     return data;
 }
