@@ -40,30 +40,35 @@ function calculateCredits(invoice, plays) {
     return volumeCredits;
 }
 
+function calculateTotalAmount(receipt) {
+    let totalAmount = 0;
+    for (let item of receipt) {
+        totalAmount += item.amount;
+    }
+    return totalAmount;
+}
+
 function generateResult(invoice, plays) {
     let data = {};
     data.customer = invoice.customer;
     let performances = [];
-    let totalAmount = 0;
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
-        const thisAmount = calculateAmount(perf, play);
-        totalAmount += thisAmount;
         let performance = {};
         performance.name = play.name;
         performance.audience = perf.audience;
-        performance.amount = thisAmount;
+        performance.amount = calculateAmount(perf, play);
         performances.push(performance);
     }
-    data.performances = performances;
-    data.totalAmount = totalAmount;
+    data.receipt = performances;
+    data.totalAmount = calculateTotalAmount(performances);
     data.volumeCredits = calculateCredits(invoice, plays);
     return data;
 }
 
 function generateText(data) {
     let result = `Statement for ${data.customer}\n`
-    for (let item of data.performances) {
+    for (let item of data.receipt) {
         result += ` ${item.name}: ${formatUSD(item.amount)} (${item.audience} seats)\n`;
     }
     result += `Amount owed is ${formatUSD(data.totalAmount)}\n`;
