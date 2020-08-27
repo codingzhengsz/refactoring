@@ -24,12 +24,11 @@ function calculateAmount(perf, play) {
 }
 
 function formatUSD(amount) {
-    const format = new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2,
-    }).format;
-    return format(amount / 100);
+    }).format(amount / 100);
 }
 
 function calculateCredits(invoice, plays) {
