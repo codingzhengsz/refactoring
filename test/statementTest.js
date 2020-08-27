@@ -1,25 +1,6 @@
 const test = require('ava');
 const {statement} = require('../src/statement');
 
-const invoice = {
-    'customer': 'Martin',
-    'performances': [
-        {
-            'playID': 'hamlet',
-            'audience': 55,
-        },
-        {
-            'playID': 'as-like',
-            'audience': 35,
-        },
-        {
-            'playID': 'othello',
-            'audience': 40,
-        },
-    ],
-};
-
-
 const plays = {
     'hamlet': {
         'name': 'Hamlet',

@@ -1,3 +1,28 @@
+function getAmountOfTragedy(perf) {
+    let thisAmount = 40000;
+    if (perf.audience > 30) {
+        thisAmount += 1000 * (perf.audience - 30);
+    }
+    return thisAmount;
+}
+
+function getAmountOfComedy(perf) {
+    let thisAmount = 30000;
+    if (perf.audience > 20) {
+        thisAmount += 10000 + 500 * (perf.audience - 20);
+    }
+    thisAmount += 300 * perf.audience;
+    return thisAmount;
+}
+
+function calculateAmount(perf, play) {
+    let amountStrategy = {
+        'tragedy': () => getAmountOfTragedy(perf),
+        'comedy': () => getAmountOfComedy(perf)
+    }
+    return amountStrategy[play.type](perf);
+}
+
 function formatUSD(amount) {
     const format = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -7,28 +32,6 @@ function formatUSD(amount) {
     return format(amount / 100);
 }
 
-function calculateAmount(perf, play) {
-    let thisAmount = 0;
-    switch (play.type) {
-        case 'tragedy':
-            thisAmount = 40000;
-            if (perf.audience > 30) {
-                thisAmount += 1000 * (perf.audience - 30);
-            }
-            break;
-        case 'comedy':
-            thisAmount = 30000;
-            if (perf.audience > 20) {
-                thisAmount += 10000 + 500 * (perf.audience - 20);
-            }
-            thisAmount += 300 * perf.audience;
-            break;
-        default:
-            throw new Error(`unknown type: ${play.type}`);
-    }
-    return thisAmount
-}
-
 function calculateCredits(invoice, plays) {
     let volumeCredits = 0;
     for (let perf of invoice.performances) {
@@ -36,7 +39,6 @@ function calculateCredits(invoice, plays) {
         volumeCredits += Math.max(perf.audience - 30, 0);
         if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
     }
-    // add extra credit for every ten comedy attendees
     return volumeCredits;
 }
 
